@@ -45,6 +45,18 @@ namespace Ciphers.Polygraphic
             var toReturn = string.Empty;
             var shift = isEncryption ? 1 : -1;
 
+            (int row, int col) findInTable(char c)
+            {
+                var lowC = char.ToLower(c);
+
+                for (var i = 0; i < ROWS; i++)
+                    for (var j = 0; j < COLS; j++)
+                        if (_table[i, j] == lowC)
+                            return (i, j);
+
+                throw new Exception($"Character '{c}' is not a character suitable for encryption"); // should never occur
+            }
+
             static int wrap(int dividend, int divisor)
             {
                 var mod = dividend % divisor;
@@ -55,8 +67,8 @@ namespace Ciphers.Polygraphic
             for (var i = 0; i < text.Length - 1; i++)
             {
                 char c1 = text[i], c2 = text[++i], d1, d2;
-                var (row1, col1) = FindInTable(c1);
-                var (row2, col2) = FindInTable(c2);
+                var (row1, col1) = findInTable(c1);
+                var (row2, col2) = findInTable(c2);
 
                 if (row1 == row2)
                 {
@@ -121,18 +133,6 @@ namespace Ciphers.Polygraphic
 
             foreach (var c in ALPHABET.Except(_keyword).ToArray())
                 appendCharacter(c);
-        }
-
-        private (int row, int col) FindInTable(char c)
-        {
-            var lowC = char.ToLower(c);
-
-            for (var i = 0; i < ROWS; i++)
-                for (var j = 0; j < COLS; j++)
-                    if (_table[i, j] == lowC)
-                        return (i, j);
-
-            throw new Exception($"Character '{c}' is not a character suitable for encryption"); // should never occur
         }
     }
 }
